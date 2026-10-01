@@ -1,25 +1,109 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-
+<!doctype html>
+<html lang="pt-BR" data-theme="dark">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>Meu E-book</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0a1420">
+  <meta name="description" content="Portfólio de Vinicius Marques Gandra: engenharia mecânica, máquinas elétricas, simulação, CAD e automação de engenharia.">
+  <title>Vinicius Marques Gandra | Engenharia & Máquinas Elétricas</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%230a1420'/%3E%3Cpath d='M12 16 32 50 52 16' fill='none' stroke='%23f4ad63' stroke-width='6' stroke-linecap='round'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="./style.css">
+  <script src="./script.js" defer></script>
 </head>
-
 <body>
+  <a class="skip-link" href="#conteudo">Pular para o conteúdo</a>
+  <div class="top-progress" id="top-progress" aria-hidden="true"></div>
+  <header class="site-header" id="inicio">
+    <nav class="nav shell" aria-label="Navegação principal">
+      <a class="brand" href="#inicio" aria-label="Vinicius Gandra, voltar ao início"><span class="brand-mark">VG<span>.</span></span><span class="brand-caption">ENGENHARIA<br>EM MOVIMENTO</span></a>
+      <button class="menu-toggle icon-button" id="menu-toggle" type="button" aria-expanded="false" aria-controls="nav-links" aria-label="Abrir menu"><span></span><span></span><span></span></button>
+      <div class="nav-links" id="nav-links">
+        <a href="#perfil">Perfil</a><a href="#atuacao">Atuação</a><a href="#experiencia">Trajetória</a><a href="#competencias">Competências</a><a href="#laboratorio">Laboratório</a>
+        <a class="nav-contact" href="#contato">Contato <span aria-hidden="true">↗</span></a>
+      </div>
+      <button class="theme-toggle icon-button" id="theme-toggle" type="button" aria-label="Ativar tema claro" title="Alternar tema"><span class="theme-icon" aria-hidden="true">☼</span></button>
+    </nav>
+  </header>
 
-    <h1>Meu E-book</h1>
+  <main id="conteudo">
+    <section class="hero shell section-pad" aria-labelledby="hero-title">
+      <div class="hero-copy reveal">
+        <div class="eyebrow"><span class="signal"></span> ENGENHARIA MECÂNICA · P&D · MÁQUINAS ELÉTRICAS</div>
+        <h1 id="hero-title">Engenharia que conecta <em>fenômenos físicos</em>, dados e soluções.</h1>
+        <p class="hero-lead">Sou <strong>Vinicius Marques Gandra</strong>. Atuo no desenvolvimento de máquinas elétricas rotativas, integrando modelagem, cálculos, simulação e automação para transformar problemas complexos em decisões de engenharia.</p>
+        <div class="hero-actions"><a class="button button-primary" href="#laboratorio">Explorar calculadoras <span aria-hidden="true">↗</span></a><a class="button button-ghost" href="#experiencia">Conhecer trajetória <span aria-hidden="true">↓</span></a></div>
+        <div class="hero-facts" aria-label="Informações principais"><span><strong>UFMG</strong>Engenharia Mecânica</span><span><strong>2025 — atual</strong>Máquinas elétricas</span><span><strong>MG · Brasil</strong>Lagoa Santa</span></div>
+      </div>
+      <div class="hero-visual reveal">
+        <div class="orbit orbit-one"></div><div class="orbit orbit-two"></div>
+        <div class="portrait-frame"><img src="./assets/gandra.png" alt="Retrato de Vinicius Marques Gandra" width="984" height="1060" fetchpriority="high"></div>
+        <div class="hero-card hero-card-top"><span class="mini-label">FOCO ATUAL</span><strong>Máquinas elétricas<br>rotativas</strong><span class="mini-line"></span></div>
+        <div class="hero-card hero-card-bottom"><span class="card-code">01 / 04</span><strong>CAD <span>+</span> CAE <span>+</span> código</strong></div>
+        <span class="diagram-label diagram-label-a">ω = 2πn / 60</span><span class="diagram-label diagram-label-b">P = T · ω</span>
+      </div>
+    </section>
 
-    <p>
-        Esta é a primeira versão da nossa landing page.
-    </p>
+    <div class="marquee-band" aria-hidden="true"><div>MODELAGEM <span>✳</span> SIMULAÇÃO <span>✳</span> AUTOMAÇÃO <span>✳</span> VALIDAÇÃO <span>✳</span> MÁQUINAS ELÉTRICAS <span>✳</span> MODELAGEM <span>✳</span> SIMULAÇÃO <span>✳</span> AUTOMAÇÃO <span>✳</span></div></div>
 
-    <a href="#">
-        Comprar agora
-    </a>
+    <section class="section shell section-pad" id="perfil" aria-labelledby="perfil-title">
+      <div class="section-heading reveal"><p class="kicker">01 / SOBRE MIM</p><h2 id="perfil-title">Da pesquisa ao produto,<br><em>uma visão integrada.</em></h2></div>
+      <div class="profile-grid">
+        <div class="profile-main reveal"><p class="large-copy">Minha trajetória passa por <strong>pesquisa científica, validação experimental, engenharia industrial, simulação numérica e desenvolvimento de produto</strong>. Gosto de partir da física do problema, escolher o método adequado e conectar disciplinas para chegar a uma solução confiável.</p><p>Na prática, isso significa reunir CAD/CAE, programação e análise de dados com experiência de laboratório e manufatura. Hoje aplico essa combinação ao desenvolvimento e à verificação de máquinas elétricas rotativas.</p><a class="text-link" href="#contato">Vamos conversar <span aria-hidden="true">↗</span></a></div>
+        <aside class="profile-aside reveal" aria-label="Eixos de atuação"><div class="aside-top"><span>INTERFACES DE TRABALHO</span><span>V. GANDRA / 2026</span></div><div class="axis-list"><div><span>01</span><strong>Fundamentos físicos</strong><small>Mecânica · Térmica · Eletromagnetismo</small></div><div><span>02</span><strong>Modelagem computacional</strong><small>CAD · FEA · CFD · análise de dados</small></div><div><span>03</span><strong>Validação técnica</strong><small>Experimento · comparação · revisão</small></div><div><span>04</span><strong>Automação</strong><small>Python · parametrização · documentação</small></div></div></aside>
+      </div>
+    </section>
 
+    <section class="section section-alt section-pad" id="atuacao" aria-labelledby="atuacao-title"><div class="shell">
+      <div class="section-heading row-heading reveal"><div><p class="kicker">02 / FRENTES DE ATUAÇÃO</p><h2 id="atuacao-title">Onde as disciplinas<br><em>se encontram.</em></h2></div><p>Áreas e tipos de problema presentes na minha experiência profissional e acadêmica.</p></div>
+      <div class="area-grid">
+        <article class="area-card reveal"><span class="area-index">01 / SISTEMAS</span><div class="area-symbol" aria-hidden="true">◎</div><h3>Máquinas elétricas</h3><p>Desenvolvimento de motores e geradores rotativos com integração entre produto, modelagem, cálculos mecânicos, estruturais e apoio às análises elétricas.</p><div class="tag-row"><span>motores</span><span>geradores</span><span>produto</span></div></article>
+        <article class="area-card reveal"><span class="area-index">02 / MÉTODOS</span><div class="area-symbol" aria-hidden="true">⌁</div><h3>CAE e simulação</h3><p>Análises estruturais e fluidodinâmicas, avaliação de deformações, sistemas offshore e interpretação de resultados numéricos.</p><div class="tag-row"><span>FEA</span><span>CFD</span><span>Nastran</span></div></article>
+        <article class="area-card reveal"><span class="area-index">03 / PROCESSOS</span><div class="area-symbol" aria-hidden="true">▣</div><h3>CAD e automação</h3><p>Modelos 3D parametrizados e rotinas para acelerar desenhos, documentação técnica, cálculos e tratamento de dados de engenharia.</p><div class="tag-row"><span>Inventor</span><span>Python</span><span>AutoCAD</span></div></article>
+        <article class="area-card reveal"><span class="area-index">04 / EVIDÊNCIA</span><div class="area-symbol" aria-hidden="true">✳</div><h3>P&D e experimentação</h3><p>Pesquisa aplicada, medições em laboratório e comparação entre teoria, simulação e dados experimentais para orientar escolhas técnicas.</p><div class="tag-row"><span>pesquisa</span><span>dados</span><span>validação</span></div></article>
+      </div>
+    </div></section>
+
+    <section class="section shell section-pad" id="experiencia" aria-labelledby="experiencia-title">
+      <div class="section-heading reveal"><p class="kicker">03 / TRAJETÓRIA</p><h2 id="experiencia-title">Experiência que evolui<br><em>com cada desafio.</em></h2></div>
+      <div class="timeline">
+        <article class="timeline-item reveal"><div class="timeline-date">2025 — ATUAL<span>01</span></div><div class="timeline-content"><div class="timeline-top"><div><p class="company">DATA ENGENHARIA · SARZEDO, MG</p><h3>Analista de Projetos de Máquinas Elétricas</h3></div><span class="current-badge">ATUAL</span></div><p>Desenvolvimento multidisciplinar de máquinas elétricas rotativas. Modelagem e parametrização em Autodesk Inventor, automação de desenhos e documentação, cálculos mecânicos e estruturais, apoio a cálculos elétricos e validação técnica. Liderança técnica de duas pessoas nas frentes de CAD e cálculos.</p><div class="timeline-tags"><span>Máquinas elétricas</span><span>Inventor</span><span>Automação</span><span>Validação</span></div></div></article>
+        <article class="timeline-item reveal"><div class="timeline-date">2024 — 2025<span>02</span></div><div class="timeline-content"><p class="company">ATEX BRASIL · BELO HORIZONTE, MG</p><h3>Analista de P&D</h3><p>Pesquisa e desenvolvimento em engenharia civil, com análise estrutural de sistemas de formas e processos de injeção. Aplicação de CAE e Nastran para avaliar deformações e apoiar novos modelos de estruturas e fixações metálicas.</p><div class="timeline-tags"><span>Estruturas</span><span>Nastran</span><span>P&D</span></div></div></article>
+        <article class="timeline-item reveal"><div class="timeline-date">2022 — 2024<span>03</span></div><div class="timeline-content"><p class="company">DELP ENGENHARIA MECÂNICA · VESPASIANO, MG</p><h3>Técnico de Engenharia 2 em P&D</h3><p>Progressão por funções de engenharia industrial e P&D. Atuação em manufatura e usinagem, CAD, rotinas Python para cálculos e dados, e análises estáticas e dinâmicas de sistemas offshore de amarração e ancoragem.</p><div class="timeline-tags"><span>Offshore</span><span>Python</span><span>Manufatura</span><span>CAE</span></div></div></article>
+        <article class="timeline-item reveal"><div class="timeline-date">2021 — 2022<span>04</span></div><div class="timeline-content"><p class="company">CEMTEC · UFMG</p><h3>Estagiário de Pesquisa</h3><p>Pesquisa com queimadores enclausurados: medições experimentais, análise de dados em Python e comparação com modelos teóricos.</p><div class="timeline-tags"><span>Experimentos</span><span>Python</span><span>Térmica</span></div></div></article>
+        <article class="timeline-item reveal"><div class="timeline-date">2020 — 2021<span>05</span></div><div class="timeline-content"><p class="company">LABTERM · UFMG</p><h3>Iniciação Científica</h3><p>Pesquisa em termografia aplicada à triagem de SARS-CoV-2, com procedimentos experimentais e análise de dados termográficos.</p><div class="timeline-tags"><span>Termografia</span><span>Pesquisa</span><span>Dados</span></div></div></article>
+      </div>
+    </section>
+
+    <section class="section section-alt section-pad" id="competencias" aria-labelledby="competencias-title"><div class="shell">
+      <div class="section-heading reveal"><p class="kicker">04 / FERRAMENTAS & FORMAÇÃO</p><h2 id="competencias-title">Método, ferramentas<br><em>e repertório.</em></h2></div>
+      <div class="skills-layout">
+        <div class="skills-panel reveal"><div class="panel-head"><h3>Modelagem & simulação</h3><span>INDICADORES DO CURRÍCULO</span></div><div class="skill-meter"><div><strong>Autodesk Inventor</strong><span>90%</span></div><div class="meter"><i style="--level:90%"></i></div></div><div class="skill-meter"><div><strong>ANSYS</strong><span>80%</span></div><div class="meter"><i style="--level:80%"></i></div></div><div class="skill-meter"><div><strong>Autodesk AutoCAD</strong><span>60%</span></div><div class="meter"><i style="--level:60%"></i></div></div><p class="meter-note">Percentuais apresentados no currículo original; são autoavaliações, não certificações de proficiência.</p></div>
+        <div class="stack-panel reveal"><div class="panel-head"><h3>Ecossistema técnico</h3><span>FERRAMENTAS & MÉTODOS</span></div><div class="stack-groups"><div><h4>Computação</h4><p>Python · MATLAB · VBA · SQL · automação · análise de dados</p></div><div><h4>CAE</h4><p>ANSYS Mechanical · Fluent · Rocky · Nastran · FEA · CFD</p></div><div><h4>Engenharia</h4><p>CAD 3D · parametrização · estruturas · manufatura · usinagem · normas técnicas</p></div></div></div>
+      </div>
+      <div class="education-grid">
+        <article class="info-card reveal"><span class="card-label">FORMAÇÃO / 01</span><h3>Engenharia Mecânica</h3><p>Universidade Federal de Minas Gerais · UFMG</p><strong>Graduado em 2026/1</strong></article>
+        <article class="info-card reveal"><span class="card-label">FORMAÇÃO / 02</span><h3>Engenharia de Computação</h3><p>CEFET-MG · Belo Horizonte</p><strong>Graduação incompleta · até o 6º período</strong></article>
+        <article class="info-card reveal"><span class="card-label">IDIOMAS</span><h3>Inglês & Espanhol</h3><p>Indicadores informados no currículo</p><strong>Inglês 80% · Espanhol 40%</strong></article>
+      </div>
+      <div class="certifications reveal"><div class="cert-intro"><p class="kicker">APRENDIZADO CONTÍNUO</p><h3>Cursos & certificações</h3><p>Formações complementares registradas no currículo.</p></div><div class="cert-list"><details><summary>Simulação estrutural, CAE e Ansys <span aria-hidden="true">+</span></summary><ul><li>Introdução ao Código ASME VIII Div. 2 utilizando Ansys Workbench</li><li>Análise de vasos de pressão e longevidade de componentes</li><li>Análise não linear com Ansys</li><li>Simulação estrutural (FEA) e Fundamentos de CAE</li></ul></details><details><summary>CFD, turbomáquinas e partículas <span aria-hidden="true">+</span></summary><ul><li>Modelagem Computacional de Turbomáquinas com Ansys CFD</li><li>Simulação Fluidodinâmica (CFD) utilizando Ansys</li><li>Introdução à Simulação de Dinâmica de Partículas com Ansys Rocky</li></ul></details><details><summary>Dados, inovação e equipes <span aria-hidden="true">+</span></summary><ul><li>Introdução ao SQL com MySQL</li><li>Inovação em Engenharia</li><li>O Grande Encontro 2022 — Equipes de alta performance</li></ul></details></div></div>
+    </div></section>
+
+    <section class="section shell section-pad" id="laboratorio" aria-labelledby="laboratorio-title">
+      <div class="section-heading row-heading reveal"><div><p class="kicker">05 / LABORATÓRIO INTERATIVO</p><h2 id="laboratorio-title">Calculadoras de<br><em>máquinas elétricas.</em></h2></div><p>Relações fundamentais para estimativas rápidas. Informe os dados de placa ou de operação e veja o resultado com fórmula e unidades.</p></div>
+      <div class="calc-shell reveal">
+        <div class="calc-sidebar"><div class="calc-sidebar-top"><span class="tiny-square" aria-hidden="true"></span> SELECIONE UM CÁLCULO</div><div class="calc-tabs" role="tablist" aria-label="Tipos de cálculo"><button type="button" class="calc-tab is-active" role="tab" id="tab-synchronous" aria-selected="true" aria-controls="panel-synchronous" data-calc="synchronous"><span>01</span>Velocidade síncrona <b>↗</b></button><button type="button" class="calc-tab" role="tab" id="tab-torque" aria-selected="false" aria-controls="panel-torque" tabindex="-1" data-calc="torque"><span>02</span>Torque mecânico <b>↗</b></button><button type="button" class="calc-tab" role="tab" id="tab-current" aria-selected="false" aria-controls="panel-current" tabindex="-1" data-calc="current"><span>03</span>Corrente trifásica <b>↗</b></button><button type="button" class="calc-tab" role="tab" id="tab-slip" aria-selected="false" aria-controls="panel-slip" tabindex="-1" data-calc="slip"><span>04</span>Escorregamento <b>↗</b></button><button type="button" class="calc-tab" role="tab" id="tab-conversion" aria-selected="false" aria-controls="panel-conversion" tabindex="-1" data-calc="conversion"><span>05</span>RPM ↔ rad/s <b>↗</b></button></div><div class="calc-note"><span>ℹ</span><p>Estimativas para estudo e triagem. Confirme hipóteses, unidades e dados de placa antes de usar em projeto.</p></div></div>
+        <div class="calc-content">
+          <section class="calc-panel" role="tabpanel" id="panel-synchronous" aria-labelledby="tab-synchronous"><div class="calc-head"><span class="calc-category">CINEMÁTICA / CAMPO GIRANTE</span><h3>Velocidade síncrona</h3><p>Velocidade do campo magnético girante em função da frequência da rede e do número total de polos.</p></div><form class="calc-form" data-calc-form="synchronous" novalidate><div class="field-grid"><label>Frequência <span>Hz</span><input name="frequency" type="text" inputmode="decimal" value="60" autocomplete="off" data-label="Frequência"></label><label>Número de polos <span>polos</span><input name="poles" type="text" inputmode="numeric" value="4" autocomplete="off" data-label="Número de polos"></label></div><button class="button button-primary calc-submit" type="submit">Calcular velocidade <span aria-hidden="true">→</span></button></form><div class="formula">n<sub>s</sub> = 120 · f / P</div><div class="calc-result" aria-live="polite"><span>RESULTADO</span><strong>—</strong><p>Insira os valores e calcule.</p></div></section>
+          <section class="calc-panel" role="tabpanel" id="panel-torque" aria-labelledby="tab-torque" hidden><div class="calc-head"><span class="calc-category">POTÊNCIA / ROTAÇÃO</span><h3>Torque mecânico</h3><p>Torque no eixo calculado a partir da potência mecânica e da rotação.</p></div><form class="calc-form" data-calc-form="torque" novalidate><div class="field-grid"><label>Potência mecânica <span>kW</span><input name="power" type="text" inputmode="decimal" value="7,5" autocomplete="off" data-label="Potência mecânica"></label><label>Rotação <span>rpm</span><input name="rpm" type="text" inputmode="decimal" value="1750" autocomplete="off" data-label="Rotação"></label></div><button class="button button-primary calc-submit" type="submit">Calcular torque <span aria-hidden="true">→</span></button></form><div class="formula">T = 9550 · P / n</div><div class="calc-result" aria-live="polite"><span>RESULTADO</span><strong>—</strong><p>Insira os valores e calcule.</p></div></section>
+          <section class="calc-panel" role="tabpanel" id="panel-current" aria-labelledby="tab-current" hidden><div class="calc-head"><span class="calc-category">SISTEMA TRIFÁSICO / ESTIMATIVA</span><h3>Corrente trifásica</h3><p>Corrente de linha aproximada para motor trifásico, usando potência mecânica de saída, tensão entre fases, fator de potência e rendimento.</p></div><form class="calc-form" data-calc-form="current" novalidate><div class="field-grid"><label>Potência de saída <span>kW</span><input name="power" type="text" inputmode="decimal" value="7,5" autocomplete="off" data-label="Potência de saída"></label><label>Tensão de linha <span>V</span><input name="voltage" type="text" inputmode="decimal" value="380" autocomplete="off" data-label="Tensão de linha"></label><label>Fator de potência <span>0–1</span><input name="powerFactor" type="text" inputmode="decimal" value="0,85" autocomplete="off" data-label="Fator de potência"></label><label>Rendimento <span>0–1</span><input name="efficiency" type="text" inputmode="decimal" value="0,90" autocomplete="off" data-label="Rendimento"></label></div><button class="button button-primary calc-submit" type="submit">Calcular corrente <span aria-hidden="true">→</span></button></form><div class="formula">I ≈ 1000 · P<sub>out</sub> / (√3 · V<sub>L</sub> · cos φ · η)</div><div class="calc-result" aria-live="polite"><span>RESULTADO</span><strong>—</strong><p>Não considera corrente de partida nem harmônicas.</p></div></section>
+          <section class="calc-panel" role="tabpanel" id="panel-slip" aria-labelledby="tab-slip" hidden><div class="calc-head"><span class="calc-category">MOTOR DE INDUÇÃO</span><h3>Escorregamento</h3><p>Diferença relativa entre a velocidade síncrona e a velocidade do rotor em regime motor.</p></div><form class="calc-form" data-calc-form="slip" novalidate><div class="field-grid"><label>Velocidade síncrona <span>rpm</span><input name="syncRpm" type="text" inputmode="decimal" value="1800" autocomplete="off" data-label="Velocidade síncrona"></label><label>Velocidade do rotor <span>rpm</span><input name="rotorRpm" type="text" inputmode="decimal" value="1750" autocomplete="off" data-label="Velocidade do rotor"></label></div><button class="button button-primary calc-submit" type="submit">Calcular escorregamento <span aria-hidden="true">→</span></button></form><div class="formula">s = (n<sub>s</sub> − n) / n<sub>s</sub> · 100%</div><div class="calc-result" aria-live="polite"><span>RESULTADO</span><strong>—</strong><p>Para operação como motor, 0 ≤ n ≤ n<sub>s</sub>.</p></div></section>
+          <section class="calc-panel" role="tabpanel" id="panel-conversion" aria-labelledby="tab-conversion" hidden><div class="calc-head"><span class="calc-category">CONVERSÃO DE UNIDADES</span><h3>RPM ↔ rad/s</h3><p>Converta rotação em velocidade angular, ou faça o caminho inverso.</p></div><form class="calc-form" data-calc-form="conversion" novalidate><div class="field-grid"><label>Direção <span>unidades</span><select name="direction" aria-label="Direção da conversão"><option value="rpm-to-rad">rpm → rad/s</option><option value="rad-to-rpm">rad/s → rpm</option></select></label><label>Valor <span id="conversion-unit">rpm</span><input name="value" type="text" inputmode="decimal" value="1800" autocomplete="off" data-label="Valor"></label></div><button class="button button-primary calc-submit" type="submit">Converter <span aria-hidden="true">→</span></button></form><div class="formula">ω = 2π · n / 60 <span class="formula-sep">|</span> n = 60 · ω / 2π</div><div class="calc-result" aria-live="polite"><span>RESULTADO</span><strong>—</strong><p>Insira o valor e converta.</p></div></section>
+        </div>
+      </div>
+    </section>
+
+    <section class="section contact-section section-pad" id="contato" aria-labelledby="contato-title"><div class="shell contact-grid"><div class="reveal"><p class="kicker">06 / CONTATO</p><h2 id="contato-title">Vamos resolver o<br><em>próximo problema?</em></h2><p>Interesse em desenvolvimento de produto, máquinas elétricas, simulação ou automação de engenharia? Entre em contato.</p><a class="button button-primary" href="mailto:viniciusgandra2016@gmail.com">Enviar e-mail <span aria-hidden="true">↗</span></a></div><div class="contact-details reveal"><a href="mailto:viniciusgandra2016@gmail.com"><span>E-MAIL</span><strong>viniciusgandra2016@gmail.com</strong><b aria-hidden="true">↗</b></a><a href="tel:+5531973171772"><span>TELEFONE</span><strong>+55 (31) 97317-1772</strong><b aria-hidden="true">↗</b></a><div><span>LOCALIZAÇÃO</span><strong>Lagoa Santa, Minas Gerais · Brasil</strong></div></div></div></section>
+  </main>
+  <footer class="site-footer"><div class="shell"><span><strong>VG.</strong> Engenharia em movimento.</span><span>© <span id="year">2026</span> Vinicius Marques Gandra</span><a href="#inicio">Voltar ao topo ↑</a></div></footer>
 </body>
-
 </html>
