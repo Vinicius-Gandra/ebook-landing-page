@@ -966,6 +966,115 @@
     bearingDiameters: MANCAL_DIAMETROS.slice() };
 });
 
+/* Dados dos gráficos técnicos. A matemática vem dos motores existentes. */
+(function (root, factory) {
+  const api = factory();
+  if (typeof module === 'object' && module.exports) module.exports = api;
+  if (root) root.EngineeringCharts = api;
+})(typeof globalThis !== 'undefined' ? globalThis : this, function () {
+  'use strict';
+
+  function diameterSeries(result, shaftEngine) {
+    const name = result.input.diameterSeries;
+    if (name === 'DIN 748-1') return shaftEngine.meta.dinDiameters.slice();
+    const step = name === 'Múltiplos de 5 mm' ? 5 : 10;
+    const count = name === 'Múltiplos de 5 mm' ? 400 : 200;
+    return Array.from({ length: count }, (_, i) => (i + 1) * step);
+  }
+
+  function shaftNeighbors(result, shaftEngine) {
+    const series = diameterSeries(result, shaftEngine);
+    const adopted = result.adoptedDiameterMm;
+    if (!series.some(d => Math.abs(d - adopted) < 1e-9)) {
+      series.push(adopted);
+      series.sort((a, b) => a - b);
+    }
+    const index = series.findIndex(d => Math.abs(d - adopted) < 1e-9);
+    const start = Math.max(0, Math.min(index - 4, series.length - 8));
+    const diameters = series.slice(start, start + 8);
+    return {
+      demandKW: result.powerKW,
+      material: result.material.name,
+      seriesName: result.input.diameterSeries,
+      bars: diameters.map(diameterMm => {
+        const capacityKW = shaftEngine.formulas.maxPowerKW(diameterMm, result.rpm,
+          result.fs, result.referenceShearMPa, result.safetyFactor);
+        return { diameterMm, capacityKW, selected: Math.abs(diameterMm - adopted) < 1e-9,
+          passes: capacityKW >= result.powerKW - 1e-9 };
+      })
+    };
+  }
+
+  function shaftMaterialCurves(result, shaftEngine) {
+    const power = result.powerKW;
+    const minPowerKW = Math.max(1, Math.min(1000, power / 10));
+    const maxPowerKW = Math.max(1000, Math.min(100000, power * 20), power * 3);
+    const curves = result.materialComparison.map((item, index) => {
+      const tauMPa = item.selected ? result.referenceShearMPa : item.tauMPa;
+      const points = Array.from({ length: 65 }, (_, i) => {
+        const powerKW = minPowerKW * (maxPowerKW / minPowerKW) ** (i / 64);
+        const torqueNm = shaftEngine.formulas.torqueNm(powerKW, result.rpm);
+        return { powerKW, diameterMm: shaftEngine.formulas.minimumDiameterMm(
+          torqueNm, result.fs, tauMPa, result.safetyFactor) };
+      });
+      return { material: item.material, selected: item.selected, eligible: item.temperatureOK && item.weldingOK,
+        index, points };
+    });
+    return { minPowerKW, maxPowerKW, curves,
+      operation: { powerKW: result.powerKW, diameterMm: result.minDiameterMm,
+        adoptedDiameterMm: result.adoptedDiameterMm } };
+  }
+
+  function bearingPolar(result, bearingEngine) {
+    const references = [0.25, 0.5, 1];
+    const ratios = references.filter(bd => Math.abs(bd - result.bd) > 1e-6);
+    ratios.push(result.bd);
+    const curves = ratios.map(bd => ({
+      bd, selected: Math.abs(bd - result.bd) < 1e-6,
+      points: Array.from({ length: 64 }, (_, i) => {
+        const epsilon = 0.02 + 0.97 * i / 63;
+        return { epsilon, betaDeg: bearingEngine.angleFromEccentricity(epsilon, bd) };
+      })
+    }));
+    return { curves, operating: {
+      min: { epsilon: result.cases.min.eccentricity, betaDeg: result.cases.min.attitudeAngleDeg },
+      mean: { epsilon: result.main.eccentricity, betaDeg: result.main.attitudeAngleDeg },
+      max: { epsilon: result.cases.max.eccentricity, betaDeg: result.cases.max.attitudeAngleDeg }
+    } };
+  }
+
+  function bearingRpm(result, bearingEngine) {
+    const points = result.rpmComparison
+      .filter(item => !item.error && Number.isFinite(item.filmThicknessUm) && Number.isFinite(item.rpm))
+      .map(item => ({ rpm: item.rpm, filmUm: item.filmThicknessUm, limitUm: item.filmLimitUm, current: false }))
+      .sort((a, b) => a.rpm - b.rpm);
+    const unique = points.filter((item, index) => index === 0 || Math.abs(item.rpm - points[index - 1].rpm) > 1e-6);
+    const current = { rpm: result.rpm, filmUm: result.main.filmThicknessUm,
+      limitUm: result.filmLimitUm, current: true };
+    const atCurrent = unique.findIndex(item => Math.abs(item.rpm - result.rpm) < 1e-6);
+    if (atCurrent >= 0) unique[atCurrent] = current;
+    else unique.push(current);
+    unique.sort((a, b) => a.rpm - b.rpm);
+    const minRpm = Math.min(...unique.map(item => item.rpm));
+    const maxRpm = Math.max(...unique.map(item => item.rpm));
+    const diameterM = result.diameterMm / 1000;
+    const velocityLimits = [0.3, 3, 10, 30, 50];
+    const boundaries = velocityLimits.map(v => v * 60 / (Math.PI * diameterM))
+      .filter(rpm => rpm > minRpm && rpm < maxRpm);
+    const filmLimitAt = rpm => bearingEngine.filmLimit(result.diameterMm,
+      bearingEngine.peripheralVelocity(result.diameterMm, rpm)).mm * 1000;
+    const limitSteps = [{ rpm: minRpm, limitUm: filmLimitAt(minRpm) }];
+    for (const boundary of boundaries) {
+      limitSteps.push({ rpm: boundary, limitUm: filmLimitAt(boundary - 1e-6) });
+      limitSteps.push({ rpm: boundary, limitUm: filmLimitAt(boundary + 1e-6) });
+    }
+    limitSteps.push({ rpm: maxRpm, limitUm: filmLimitAt(maxRpm) });
+    return { points: unique, limitSteps, minRpm, maxRpm, current };
+  }
+
+  return { shaftNeighbors, shaftMaterialCurves, bearingPolar, bearingRpm };
+});
+
 (() => {
   'use strict';
 
@@ -1315,36 +1424,103 @@
       box.append(row);
     });
   }
-  function renderCurve(result) {
-    const chart = $('#shaft-power-chart'); chart.replaceChildren();
-    const W = 660, H = 230, L = 51, R = 17, T = 18, B = 32;
-    const xMin = result.rpm * .45, xMax = result.rpm * 1.55;
-    const yMax = Math.max(result.maxPowerKW * 1.55, result.powerKW) * 1.12;
-    const x = rpm => L + (rpm - xMin) / (xMax - xMin) * (W - L - R);
-    const y = power => H - B - power / yMax * (H - T - B);
-    for (let i = 0; i <= 3; i++) {
-      const value = yMax * i / 3, yy = y(value);
+  function chartText(target, x, y, value, className, anchor = 'start', extra = {}) {
+    const label = svg('text', { x, y, 'text-anchor': anchor, class: className, ...extra });
+    label.textContent = value;
+    target.append(label);
+    return label;
+  }
+  function chartTitle(target, value) { const title = svg('title'); title.textContent = value; target.append(title); }
+  function chartStep(raw) {
+    const scale = 10 ** Math.floor(Math.log10(Math.max(raw, 1e-9)));
+    const fraction = raw / scale;
+    return (fraction <= 1 ? 1 : fraction <= 2 ? 2 : fraction <= 2.5 ? 2.5 : fraction <= 5 ? 5 : 10) * scale;
+  }
+  function chartPath(points) {
+    return points.map(([x, y], i) => `${i ? 'L' : 'M'}${x.toFixed(2)} ${y.toFixed(2)}`).join(' ');
+  }
+  function renderShaftNeighbors(result) {
+    const data = EngineeringCharts.shaftNeighbors(result, ShaftEngine);
+    const chart = $('#shaft-neighbor-chart'); chart.replaceChildren();
+    const W = 760, H = 390, L = 76, R = 22, T = 25, B = 60;
+    const step = chartStep(Math.max(data.demandKW, ...data.bars.map(item => item.capacityKW)) / 5);
+    const yMax = Math.ceil(Math.max(data.demandKW, ...data.bars.map(item => item.capacityKW)) / step) * step;
+    const y = value => H - B - value / yMax * (H - T - B);
+    for (let value = 0; value <= yMax + step / 10; value += step) {
+      const yy = y(value);
       chart.append(svg('line', { x1:L, y1:yy, x2:W-R, y2:yy, class:'chart-gridline' }));
-      const label = svg('text', { x:L-7, y:yy+3, 'text-anchor':'end', class:'chart-label' });
-      label.textContent = fmt(value, 0); chart.append(label);
+      chartText(chart, L-10, yy+5, fmt(value,0), 'chart-label', 'end');
     }
-    chart.append(svg('line', { x1:L, y1:H-B, x2:W-R, y2:H-B, class:'chart-axis' }));
-    for (const rpm of [xMin, result.rpm, xMax]) {
-      const label = svg('text', { x:x(rpm), y:H-8, 'text-anchor':'middle', class:'chart-label' });
-      label.textContent = `${fmt(rpm, 0)} rpm`; chart.append(label);
-    }
-    const points = Array.from({ length:21 }, (_, i) => {
-      const rpm = xMin + i / 20 * (xMax-xMin);
-      const power = result.maxTorqueNm * rpm / 9550;
-      return [x(rpm), y(power)];
+    const slot = (W - L - R) / data.bars.length;
+    data.bars.forEach((item, i) => {
+      const width = Math.min(54, slot * .64);
+      const x = L + slot * (i + .5) - width / 2;
+      const bar = svg('rect', { x, y:y(item.capacityKW), width, height:H-B-y(item.capacityKW), rx:5,
+        class:`capacity-bar ${item.selected ? 'selected' : item.passes ? 'passes' : 'fails'}` });
+      chartTitle(bar, `${fmt(item.diameterMm,0)} mm · capacidade ${fmt(item.capacityKW,0)} kW · ${item.passes ? 'atende' : 'não atende'}`);
+      chart.append(bar);
+      chartText(chart, x+width/2, H-B+25, fmt(item.diameterMm,0),
+        `chart-label capacity-x-label${item.selected ? ' selected' : ''}`, 'middle');
+      if (item.selected || (i+1 < data.bars.length && !item.passes && data.bars[i+1].passes)) {
+        chartText(chart, x+width/2, Math.max(T+14,y(item.capacityKW)-10), fmt(item.capacityKW,0),
+          `chart-value-label${item.selected ? ' selected' : ''}`, 'middle');
+      }
     });
-    const line = points.map(([px,py],i) => `${i ? 'L' : 'M'}${px.toFixed(2)} ${py.toFixed(2)}`).join(' ');
-    const area = `${line} L${points.at(-1)[0].toFixed(2)} ${H-B} L${points[0][0].toFixed(2)} ${H-B} Z`;
-    chart.append(svg('path', { d:area, class:'chart-area' }), svg('path', { d:line, class:'chart-curve' }));
-    chart.append(svg('line', { x1:x(result.rpm),y1:H-B,x2:x(result.rpm),y2:y(result.powerKW),class:'chart-guide' }));
-    chart.append(svg('circle', { cx:x(result.rpm),cy:y(result.powerKW),r:7,class:'chart-point' }));
-    const pointLabel = svg('text', { x:Math.min(W-R-75,x(result.rpm)+12),y:Math.max(17,y(result.powerKW)-12),class:'chart-legend' });
-    pointLabel.textContent = 'OPERAÇÃO'; chart.append(pointLabel);
+    const demandY = y(data.demandKW);
+    chart.append(svg('line', { x1:L, y1:demandY, x2:W-R, y2:demandY, class:'capacity-demand' }));
+    chartText(chart, L+9, Math.max(T+18,demandY-9), `P de cálculo = ${fmt(data.demandKW,0)} kW`,
+      'capacity-demand-label');
+    chartText(chart, (L+W-R)/2, H-8, `${data.seriesName} · diâmetro (mm)`,
+      'chart-axis-title', 'middle');
+    chartText(chart, 19, (T+H-B)/2, 'Capacidade (kW)', 'chart-axis-title', 'middle',
+      { transform:`rotate(-90 19 ${(T+H-B)/2})` });
+    set('#shaft-neighbor-context', `${data.material} · ${fmt(result.rpm,0)} rpm · FS ${fmt(result.fs,2)} · SF ${fmt(result.safetyFactor,0)}`);
+  }
+  function renderShaftMaterialCurves(result) {
+    const data = EngineeringCharts.shaftMaterialCurves(result, ShaftEngine);
+    const chart = $('#shaft-diameter-power-chart'); chart.replaceChildren();
+    const W = 760, H = 400, L = 76, R = 22, T = 26, B = 64;
+    const maxDiameter = Math.max(...data.curves.flatMap(row => row.points.map(point => point.diameterMm)));
+    const step = chartStep(maxDiameter / 6);
+    const yMax = Math.ceil(maxDiameter / step) * step;
+    const logMin = Math.log10(data.minPowerKW), logSpan = Math.log10(data.maxPowerKW) - logMin;
+    const x = power => L + (Math.log10(power) - logMin) / logSpan * (W - L - R);
+    const y = diameter => H - B - diameter / yMax * (H - T - B);
+    for (let value = 0; value <= yMax + step / 10; value += step) {
+      const yy = y(value);
+      chart.append(svg('line', { x1:L,y1:yy,x2:W-R,y2:yy,class:'chart-gridline' }));
+      chartText(chart,L-10,yy+5,fmt(value,0),'chart-label','end');
+    }
+    for (let decade = Math.floor(logMin); decade <= Math.ceil(Math.log10(data.maxPowerKW)); decade++) {
+      const power = 10 ** decade;
+      if (power < data.minPowerKW || power > data.maxPowerKW) continue;
+      const xx = x(power);
+      chart.append(svg('line', { x1:xx,y1:T,x2:xx,y2:H-B,class:'chart-gridline' }));
+      chartText(chart,xx,H-B+25,fmt(power,0),'chart-label','middle');
+    }
+    data.curves.filter(row => !row.selected).concat(data.curves.filter(row => row.selected)).forEach(row => {
+      const path = svg('path', { d:chartPath(row.points.map(point => [x(point.powerKW),y(point.diameterMm)])),
+        class:`material-curve material-${row.index}${row.selected ? ' selected' : ''}${row.eligible ? '' : ' ineligible'}` });
+      chartTitle(path, `${row.material}${row.selected ? ' · selecionado' : ''}`);
+      chart.append(path);
+    });
+    const ox=x(data.operation.powerKW), oy=y(data.operation.diameterMm);
+    chart.append(svg('line', { x1:ox,y1:oy,x2:ox,y2:H-B,class:'chart-guide' }));
+    const point = svg('circle', { cx:ox,cy:oy,r:7,class:'chart-operation-point' });
+    chartTitle(point, `${fmt(data.operation.powerKW,0)} kW · mínimo ${fmt(data.operation.diameterMm,1)} mm · adotado ${fmt(data.operation.adoptedDiameterMm,0)} mm`);
+    chart.append(point);
+    chartText(chart, ox+12, Math.max(T+14,oy-11), 'OPERAÇÃO', 'chart-operation-label');
+    chartText(chart, (L+W-R)/2,H-8,'Potência de cálculo (kW) · escala logarítmica','chart-axis-title','middle');
+    chartText(chart,19,(T+H-B)/2,'Diâmetro mínimo (mm)','chart-axis-title','middle',
+      { transform:`rotate(-90 19 ${(T+H-B)/2})` });
+    const legend = $('#shaft-material-legend'); legend.replaceChildren();
+    data.curves.forEach(row => {
+      const item = node('span', `material-legend-item${row.selected ? ' selected' : ''}`);
+      item.append(node('i', `material-swatch material-${row.index}`),
+        node('span', '', `${row.material}${row.selected ? ' · selecionado' : ''}`));
+      legend.append(item);
+    });
+    set('#shaft-curve-context', `${fmt(data.operation.powerKW,0)} kW → d mínimo ${fmt(data.operation.diameterMm,1)} mm → Ø adotado ${fmt(data.operation.adoptedDiameterMm,0)} mm`);
   }
   function renderTrace(result) {
     const box = $('#shaft-trace'); box.replaceChildren();
@@ -1369,7 +1545,8 @@
     $('#shaft-gauge').style.strokeDashoffset = String(345.58 * (1 - Math.max(0, Math.min(result.utilization, 1))));
     set('#shaft-capacity-power', `${fmt(result.maxPowerKW, 0)} kW`);
     set('#shaft-capacity-sf', `${fmt(result.actualSafetyFactor, 2)}`);
-    renderShaftDiagram(result); renderCriteria(result); renderMaterials(result); renderCurve(result); renderTrace(result);
+    renderShaftDiagram(result); renderCriteria(result); renderMaterials(result);
+    renderShaftNeighbors(result); renderShaftMaterialCurves(result); renderTrace(result);
     messages('#shaft-messages', result.warnings, result.notes);
   }
 
@@ -1459,6 +1636,76 @@
     const label = svg('text', { x:W-R-2,y:y(result.filmLimitUm)-5,'text-anchor':'end',class:'chart-legend' });
     label.textContent = `LIMITE ${fmt(result.filmLimitUm,0)} µm`; chart.append(label);
   }
+  function renderBearingPolar(result) {
+    const data = EngineeringCharts.bearingPolar(result, BearingEngine);
+    const chart = $('#bearing-polar-chart'); chart.replaceChildren();
+    const W = 420, H = 330, cx = 318, cy = 28, radius = 244;
+    const point = (epsilon, betaDeg) => {
+      const angle = betaDeg * Math.PI / 180;
+      return [cx - radius * epsilon * Math.sin(angle), cy + radius * epsilon * Math.cos(angle)];
+    };
+    for (let epsilon = .2; epsilon <= 1.001; epsilon += .2) {
+      const r = radius * epsilon;
+      chart.append(svg('path', { d:`M${cx-r} ${cy} A${r} ${r} 0 0 0 ${cx} ${cy+r}`, class:'polar-grid' }));
+      chartText(chart,cx+7,cy+r+4,fmt(epsilon,1),'polar-axis-label');
+    }
+    for (let beta = 0; beta <= 90; beta += 15) {
+      const [ex,ey] = point(1,beta);
+      chart.append(svg('line', { x1:cx,y1:cy,x2:ex,y2:ey,class:'polar-grid' }));
+      const [lx,ly] = point(1.09,beta);
+      chartText(chart,lx,ly+4,`${beta}°`,'polar-axis-label','middle');
+    }
+    data.curves.filter(row => !row.selected).concat(data.curves.filter(row => row.selected)).forEach(row => {
+      const path = svg('path', { d:chartPath(row.points.map(item => point(item.epsilon,item.betaDeg))),
+        class:`polar-curve${row.selected ? ' selected' : ''}` });
+      chartTitle(path, `B/D ${fmt(row.bd,3)}${row.selected ? ' · configuração atual' : ' · referência'}`);
+      chart.append(path);
+    });
+    for (const [name,item] of Object.entries(data.operating)) {
+      const [x,y] = point(item.epsilon,item.betaDeg);
+      const dot = svg('circle', { cx:x,cy:y,r:name === 'mean' ? 7 : 5,
+        class:name === 'mean' ? 'polar-current' : 'polar-endpoint' });
+      chartTitle(dot, `${name === 'mean' ? 'Folga central' : name === 'min' ? 'Folga menor' : 'Folga maior'} · ε ${fmt(item.epsilon,3)} · β ${fmt(item.betaDeg,1)}°`);
+      chart.append(dot);
+    }
+    set('#bearing-polar-context', `B/D ${fmt(result.bd,3)} · ε ${fmt(result.main.eccentricity,3)} · β ${fmt(result.main.attitudeAngleDeg,1)}° na folga central`);
+  }
+  function renderBearingRpm(result) {
+    const data = EngineeringCharts.bearingRpm(result, BearingEngine);
+    const chart = $('#bearing-rpm-chart'); chart.replaceChildren();
+    const W = 620, H = 340, L = 61, R = 18, T = 25, B = 56;
+    const span = Math.max(1,data.maxRpm-data.minRpm);
+    const xMin = Math.max(0,data.minRpm-span*.025), xMax = data.maxRpm+span*.025;
+    const peak = Math.max(...data.points.map(item => item.filmUm),...data.limitSteps.map(item => item.limitUm));
+    const yStep = chartStep(peak/5), yMax = Math.ceil(peak/yStep)*yStep;
+    const x = rpm => L + (rpm-xMin)/(xMax-xMin)*(W-L-R);
+    const y = film => H-B-film/yMax*(H-T-B);
+    for (let value=0; value<=yMax+yStep/10; value+=yStep) {
+      const yy=y(value);
+      chart.append(svg('line', { x1:L,y1:yy,x2:W-R,y2:yy,class:'chart-gridline' }));
+      chartText(chart,L-10,yy+5,fmt(value,0),'chart-label','end');
+    }
+    const xStep=chartStep(span/7);
+    for (let rpm=Math.ceil(data.minRpm/xStep)*xStep; rpm<=data.maxRpm+1e-6; rpm+=xStep) {
+      const xx=x(rpm);
+      chart.append(svg('line', { x1:xx,y1:T,x2:xx,y2:H-B,class:'chart-gridline' }));
+      chartText(chart,xx,H-B+25,fmt(rpm,0),'chart-label','middle');
+    }
+    chart.append(svg('path', { d:chartPath(data.limitSteps.map(item => [x(item.rpm),y(item.limitUm)])),
+      class:'rpm-limit-curve' }));
+    chart.append(svg('path', { d:chartPath(data.points.map(item => [x(item.rpm),y(item.filmUm)])),
+      class:'rpm-film-curve' }));
+    data.points.forEach(item => {
+      const dot=svg('circle', { cx:x(item.rpm),cy:y(item.filmUm),r:item.current ? 7 : 4,
+        class:item.current ? 'rpm-current' : 'rpm-point' });
+      chartTitle(dot, `${fmt(item.rpm,0)} rpm · filme ${fmt(item.filmUm,2)} µm · limite ${fmt(item.limitUm,0)} µm`);
+      chart.append(dot);
+    });
+    chartText(chart,(L+W-R)/2,H-8,'Rotação (rpm)','chart-axis-title','middle');
+    chartText(chart,18,(T+H-B)/2,'Filme mínimo (µm)','chart-axis-title','middle',
+      { transform:`rotate(-90 18 ${(T+H-B)/2})` });
+    set('#bearing-rpm-context', `${fmt(result.rpm,0)} rpm → filme ${fmt(result.main.filmThicknessUm,1)} µm · limite ${fmt(result.filmLimitUm,0)} µm`);
+  }
   function renderBearing(result) {
     status('#bearing-status', result.status, result.statusText, `${fmt(result.rpm, 0)} rpm · B/D ${fmt(result.bd, 3)} · ψ ${fmt(result.psiPermille, 2)}‰`);
     set('#bearing-kpi-film', `${fmt(result.critical.filmThicknessUm, 1)} µm`);
@@ -1477,6 +1724,7 @@
     $('#bearing-ecc-line').setAttribute('x2', 175 + offset);
     $('#bearing-ecc-line').setAttribute('y2', 150 + offset * .25);
     renderFilm(result); renderOils(result); renderTemperature(result);
+    renderBearingPolar(result); renderBearingRpm(result);
     const metrics = $('#bearing-metrics'); metrics.replaceChildren();
     [
       ['Velocidade periférica', `${fmt(result.peripheralVelocityMS, 2)} m/s`],
@@ -1494,11 +1742,13 @@
     messages(which === 'shaft' ? '#shaft-messages' : '#bearing-messages', [detail]);
     if (which === 'shaft') {
       ['#shaft-kpi-d','#shaft-kpi-min','#shaft-kpi-torque','#shaft-kpi-util','#shaft-gauge-value','#shaft-capacity-power','#shaft-capacity-sf','#shaft-visual-adopted','#shaft-visual-min','#shaft-visual-bearing','#shaft-diagram-d'].forEach(item => set(item, '—'));
-      ['#criterion-bars','#material-comparison','#shaft-power-chart','#shaft-trace'].forEach(item => $(item).replaceChildren());
+      ['#criterion-bars','#material-comparison','#shaft-neighbor-chart','#shaft-diameter-power-chart','#shaft-material-legend','#shaft-trace'].forEach(item => $(item).replaceChildren());
+      set('#shaft-neighbor-context','—'); set('#shaft-curve-context','—');
       $('#shaft-gauge').style.strokeDashoffset = '345.58';
     } else {
       ['#bearing-kpi-film','#bearing-kpi-limit','#bearing-kpi-pressure','#bearing-kpi-oil','#bearing-diagram-label'].forEach(item => set(item, '—'));
-      ['#bearing-film-chart','#bearing-metrics','#bearing-oil-comparison','#bearing-temperature-chart'].forEach(item => $(item).replaceChildren());
+      ['#bearing-film-chart','#bearing-metrics','#bearing-oil-comparison','#bearing-temperature-chart','#bearing-polar-chart','#bearing-rpm-chart'].forEach(item => $(item).replaceChildren());
+      set('#bearing-polar-context','—'); set('#bearing-rpm-context','—');
     }
   }
   function recalculate() {

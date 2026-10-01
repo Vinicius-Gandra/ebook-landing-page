@@ -270,6 +270,64 @@ p { text-wrap: pretty; }
 .film-limit { margin-top: 3px; padding-top: 13px; line-height: 1.5; }
 .bearing-metric { padding: 13px; border-radius: 9px; }
 .bearing-metric strong { font-size: .95rem; }
+/* Calculated engineering plots */
+.engineering-chart-card { margin-top: 12px; }
+.engineering-chart-context { margin: -6px 0 14px; color: var(--muted); font-size: .72rem; line-height: 1.5; font-variant-numeric: tabular-nums; }
+.chart-scroll { max-width: 100%; overflow-x: auto; overflow-y: hidden; border: 1px solid var(--line); border-radius: 12px; background: var(--bg-alt); scrollbar-color: var(--line) transparent; }
+.chart-scroll:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+.chart-mobile-hint { display: none; }
+.engineering-svg { display: block; width: 100%; height: auto; min-width: 0; overflow: visible; }
+.engineering-svg .chart-label, .engineering-svg .polar-axis-label { fill: var(--dim); font: 13px ui-monospace, SFMono-Regular, Consolas, monospace; }
+.engineering-svg .chart-axis-title { fill: var(--muted); font: 700 13px ui-sans-serif, system-ui, sans-serif; }
+.engineering-svg .chart-gridline, .engineering-svg .polar-grid { stroke: var(--line); stroke-width: 1; fill: none; opacity: .8; }
+.engineering-svg .polar-grid { opacity: .58; }
+.engineering-svg .chart-value-label { fill: var(--muted); font: 700 13px ui-monospace, SFMono-Regular, Consolas, monospace; paint-order: stroke; stroke: var(--bg-alt); stroke-width: 4px; }
+.engineering-svg .chart-value-label.selected, .engineering-svg .capacity-x-label.selected { fill: var(--text); font-weight: 900; }
+.capacity-bar { transition: opacity .2s; }
+.capacity-bar:hover { opacity: .75; }
+.capacity-bar.fails { fill: #9aaba9; }
+.capacity-bar.passes { fill: #8cbee8; }
+.capacity-bar.selected { fill: #328de6; }
+.capacity-demand { stroke: var(--text); stroke-width: 2; }
+.capacity-demand-label { fill: var(--text); font: 700 13px ui-sans-serif, system-ui, sans-serif; paint-order: stroke; stroke: var(--bg-alt); stroke-width: 5px; }
+.material-curve { fill: none; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; opacity: .8; }
+.material-curve.selected { stroke-width: 4.5; opacity: 1; }
+.material-curve.ineligible { stroke-dasharray: 7 5; opacity: .54; }
+.material-curve.material-0 { stroke: #4e9df4; }
+.material-curve.material-1 { stroke: #f18d67; }
+.material-curve.material-2 { stroke: #50cda4; }
+.material-curve.material-3 { stroke: #e8bf56; }
+.material-curve.material-4 { stroke: #ec88b1; }
+.material-curve.material-5 { stroke: #b3a1f8; }
+.chart-operation-point { fill: #4e9df4; stroke: var(--bg-alt); stroke-width: 4; }
+.chart-operation-label { fill: var(--text); font: 800 12px ui-sans-serif, system-ui, sans-serif; paint-order: stroke; stroke: var(--bg-alt); stroke-width: 5px; }
+.material-legend, .engineering-key { display: flex; flex-wrap: wrap; gap: 9px 17px; align-items: center; margin-top: 14px; }
+.material-legend-item, .engineering-key span { display: inline-flex; align-items: center; gap: 7px; color: var(--muted); font-size: .68rem; line-height: 1.4; }
+.material-legend-item.selected { color: var(--text); font-weight: 750; }
+.material-swatch { width: 18px; height: 3px; border-radius: 3px; display: inline-block; flex: none; }
+.material-swatch.material-0 { background: #4e9df4; }
+.material-swatch.material-1 { background: #f18d67; }
+.material-swatch.material-2 { background: #50cda4; }
+.material-swatch.material-3 { background: #e8bf56; }
+.material-swatch.material-4 { background: #ec88b1; }
+.material-swatch.material-5 { background: #b3a1f8; }
+.engineering-key i { display: inline-block; width: 17px; height: 4px; border-radius: 4px; flex: none; }
+.engineering-key .key-fails { background: #9aaba9; }
+.engineering-key .key-passes { background: #8cbee8; }
+.engineering-key .key-selected, .engineering-key .key-rpm-film, .engineering-key .key-polar-current { background: #328de6; }
+.engineering-key .key-polar-end { background: var(--bg-alt); border: 2px solid #328de6; width: 10px; height: 10px; border-radius: 50%; }
+.engineering-key .key-polar-reference { background: #8ca7aa; }
+.engineering-key .key-rpm-limit { background: var(--text); }
+.engineering-key .key-rpm-current { background: #328de6; width: 10px; height: 10px; border-radius: 50%; }
+.bearing-engineering-grid { display: grid; grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr); gap: 12px; margin-top: 12px; }
+.bearing-engineering-grid .engineering-chart-card { margin-top: 0; min-width: 0; }
+.polar-curve { fill: none; stroke: #8ca7aa; stroke-width: 2; opacity: .7; }
+.polar-curve.selected { stroke: #328de6; stroke-width: 3.5; opacity: 1; }
+.polar-current, .rpm-current { fill: #328de6; stroke: var(--bg-alt); stroke-width: 3; }
+.polar-endpoint { fill: var(--bg-alt); stroke: #328de6; stroke-width: 2.5; }
+.rpm-film-curve { fill: none; stroke: #328de6; stroke-width: 3.5; stroke-linecap: round; stroke-linejoin: round; }
+.rpm-limit-curve { fill: none; stroke: var(--text); stroke-width: 2; }
+.rpm-point { fill: #328de6; stroke: var(--bg-alt); stroke-width: 2; }
 .lab-scope { border-radius: 13px; margin-top: 35px; }
 .quick-heading { margin-top: 120px; }
 .calc-shell { border-radius: 22px; box-shadow: var(--shadow); }
@@ -308,6 +366,7 @@ p { text-wrap: pretty; }
   .timeline-item::before { left: 187px; }
   .lab-workspace-body { grid-template-columns: 310px minmax(0, 1fr); }
   .lab-controls { padding: 22px 18px; }
+  .bearing-engineering-grid { grid-template-columns: 1fr; }
 }
 
 @media (max-width: 920px) {
@@ -417,6 +476,11 @@ p { text-wrap: pretty; }
   .lab-analysis-grid { grid-template-columns: 1fr; gap: 9px; margin-top: 9px; }
   .lab-chart-card { padding: 16px; }
   .lab-card-head h4 { font-size: 1rem; }
+  .engineering-chart-card .lab-card-head { flex-wrap: wrap; }
+  .engineering-chart-context { font-size: .69rem; }
+  .chart-scroll .engineering-svg { min-width: 620px; }
+  .chart-scroll.polar-scroll .engineering-svg { min-width: 340px; }
+  .chart-mobile-hint { display: block; margin: 7px 0 0; color: var(--dim); font-size: .64rem; text-align: right; }
   .wide-chart, .materials-card { margin-top: 9px; }
   .material-row { grid-template-columns: 75px 1fr 55px; gap: 8px; font-size: .63rem; }
   .bearing-hero { grid-template-columns: 1fr; }
