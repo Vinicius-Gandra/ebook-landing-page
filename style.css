@@ -526,3 +526,8 @@ p { text-wrap: pretty; }
 @media (hover: none) {
   .area-card:hover, .button:hover { transform: none; }
 }
+.lab-entry{display:flex;align-items:center;justify-content:space-between;gap:24px;padding:24px 28px;margin:0 0 42px;border:1px solid var(--line);border-radius:18px;background:var(--surface)}
+.lab-entry p{max-width:650px;margin:7px 0 0;color:var(--muted);font-size:.85rem}
+.lab-entry .button{flex:none;white-space:nowrap}
+.lab-entry+.quick-heading{margin-top:65px}
+@media(max-width:760px){.lab-entry{align-items:stretch;flex-direction:column;padding:22px}.lab-entry .button{white-space:normal}.lab-entry+.quick-heading{margin-top:52px}}

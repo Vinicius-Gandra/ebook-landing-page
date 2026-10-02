@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <title>Relatório de cálculo | Laboratório VG</title>
+  <link rel="stylesheet" href="assets/css/relatorio.css">
+  <script defer src="assets/js/engine.js"></script>
+  <script defer src="assets/js/math.js"></script>
+  <script defer src="assets/js/memoria.js"></script>
+  <script defer src="assets/js/form.js"></script>
+  <script defer src="assets/js/relatorio.js"></script>
+</head>
+<body>
+  <header class="toolbar">
+    <a id="voltar" href="laboratorio.html">← Voltar ao laboratório</a>
+    <button id="imprimir" type="button">Imprimir / salvar PDF</button>
+  </header>
+  <main>
+    <header class="report-head">
+      <p class="eyebrow">VG · LABORATÓRIO DE ENGENHARIA</p>
+      <h1>Relatório de cálculo</h1>
+      <p>Dimensionamento de ponta de eixo e verificação de mancal de deslizamento</p>
+      <div class="report-meta"><span id="data"></span><span id="projeto"></span><span id="equipamento"></span><span id="responsavel"></span></div>
+    </header>
+    <div id="erro" role="alert" hidden></div>
+    <div id="conteudo" hidden>
+      <section aria-labelledby="resumo-titulo">
+        <h2 id="resumo-titulo">Resumo do caso</h2>
+        <div class="summary-grid" id="resumo"></div>
+      </section>
+      <section aria-labelledby="memoria-titulo">
+        <h2 id="memoria-titulo">Memória de cálculo</h2>
+        <p class="section-intro">Resultados e hipóteses gerados com os mesmos dados usados no laboratório.</p>
+        <pre id="memoria"></pre>
+      </section>
+      <section aria-labelledby="limites-titulo">
+        <h2 id="limites-titulo">Limites de aplicação</h2>
+        <p>O cálculo do eixo considera seção circular maciça sob torção. Não substitui a avaliação de flexão, fadiga, entalhes ou chavetas. O mancal usa o modelo estacionário de Reynolds, geometria rígida e viscosidade uniforme. Confirme as condições reais de operação, os dados de entrada e as normas aplicáveis antes de usar os resultados em projeto.</p>
+      </section>
+    </div>
+    <footer>Gerado localmente pelo Laboratório VG · O endereço do caso permite reabrir os dados de entrada.</footer>
+  </main>
+</body>
+</html>
